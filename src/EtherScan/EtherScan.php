@@ -1,11 +1,19 @@
 <?php
 
-namespace EtherScan\Resources;
+namespace EtherScan;
 
-use EtherScan\ApiConnector;
+use EtherScan\Resources\AbstractHttpResource;
+use EtherScan\Resources\Account;
+use EtherScan\Resources\Stats;
 
 class EtherScan
 {
+    const MODE_API = 'api';
+    const MODE_TESTNET = 'testnet';
+    const MODE_ROPSTEN = 'ropsten';
+    const MODE_RINKEBY = 'rinkeby';
+    const MODE_KOVAN = 'kovan';
+
     /** @var Stats */
     private $stats;
     /** @var Account */
@@ -13,9 +21,9 @@ class EtherScan
     /** @var ApiConnector */
     private $apiConnector;
 
-    public function __construct(string $apiKey)
+    public function __construct(string $apiKey, string $mode = self::MODE_API)
     {
-        $this->apiConnector = ApiConnector::getInstance($apiKey);
+        $this->apiConnector = ApiConnector::getInstance($apiKey, $mode);
         $this->stats = new Stats($this->apiConnector);
         $this->account = new Account($this->apiConnector);
     }
@@ -36,16 +44,14 @@ class EtherScan
         return $this->account;
     }
 
-    /*
     public function getTxLink(string $hash)
     {
-        return $this->apiConnector->generateLink('', ApiConnector::RESOURCE_TX, $hash);
+        return $this->apiConnector->generateLink(AbstractHttpResource::RESOURCE_TX . '/' . $hash);
     }
 
     public function getAddressLink(string $address)
     {
-        return $this->apiConnector->generateLink('', ApiConnector::RESOURCE_TX, $address);
+        return $this->apiConnector->generateLink(AbstractHttpResource::RESOURCE_ADDRESS . '/' . $address);
     }
-    */
 
 }
