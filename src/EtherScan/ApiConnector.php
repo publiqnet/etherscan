@@ -18,7 +18,7 @@ class ApiConnector
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
             CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HEADER => ['Accept: application/json'],
+            CURLOPT_HTTPHEADER => ['Accept: application/json'],
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FOLLOWLOCATION => 1,
             CURLOPT_SSL_VERIFYHOST => 0,
@@ -53,13 +53,6 @@ class ApiConnector
 
     public function doRequest(string $resource, array $queryParams = null)
     {
-        if (is_array($queryParams) &&
-            !isset($queryParams['module'], $queryParams['action'], $queryParams['apiToken'])
-        ) {
-
-            throw new \InvalidArgumentException('Missing/Invalid query parameters');
-        }
-
         $url = $this->generateLink($resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);

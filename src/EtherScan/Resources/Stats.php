@@ -10,19 +10,19 @@ class Stats extends AbstractHttpResource
     public function __construct(ApiConnector $apiConnector)
     {
         parent::__construct($apiConnector);
-        $this->queryParams['action'] = 'stats';
+        $this->queryParams['module'] = 'stats';
     }
 
 
     public function getEthPrice()
     {
-        $this->queryParams['module'] = 'ethprice';
+        $this->queryParams['action'] = 'ethprice';
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $this->queryParams);
     }
 
     public function getEthSupply()
     {
-        $this->queryParams['module'] = 'ethsupply';
+        $this->queryParams['action'] = 'ethsupply';
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $this->queryParams);
     }
 

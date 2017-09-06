@@ -11,7 +11,7 @@ class Account extends AbstractHttpResource
     public function __construct(ApiConnector $apiConnector)
     {
         parent::__construct($apiConnector);
-        $this->queryParams['action'] = 'account';
+        $this->queryParams['module'] = 'account';
     }
 
     public function getBalance(string $address)

@@ -2,6 +2,6 @@
 
 require '../vendor/autoload.php';
 
-$etherScan = new \EtherScan\EtherScan('');
+$etherScan = new \EtherScan\EtherScan('BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H');
 
-echo $etherScan->getAddressLink('asdasdasdasdasdadasd');
+echo $etherScan->getStats()->getEthPrice();
