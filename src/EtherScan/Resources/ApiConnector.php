@@ -1,11 +1,9 @@
 <?php
 
-namespace EtherScan;
+namespace EtherScan\Resources;
 
 class ApiConnector
 {
-    /** @var ApiConnector */
-    private static $instance;
     /** @var resource */
     private $ch;
     /** @var string */
@@ -13,12 +11,12 @@ class ApiConnector
     /** @var string */
     private $prefix;
 
-    private function __construct(string $apiKey, string $prefix)
+    public function __construct(string $apiKey, string $prefix)
     {
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
             CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HEADER => ['Accept: application/json'],
+            CURLOPT_HTTPHEADER => ['Accept: application/json'],
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FOLLOWLOCATION => 1,
             CURLOPT_SSL_VERIFYHOST => 0,
@@ -28,15 +26,12 @@ class ApiConnector
         $this->prefix = $prefix;
     }
 
-    public static function getInstance(string $apiKey, string $prefix)
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self($apiKey, $prefix);
-        }
-        return self::$instance;
-    }
-
-    public function generateLink(string $resource, array $queryParams = null)
+    /**
+     * @param string $resource
+     * @param array|null $queryParams
+     * @return string
+     */
+    public function generateLink(string $resource, array $queryParams = null): string
     {
         $query = '';
         if (is_array($queryParams) && count($queryParams) > 0) {
@@ -51,15 +46,13 @@ class ApiConnector
         return $url;
     }
 
-    public function doRequest(string $resource, array $queryParams = null)
+    /**
+     * @param string $resource
+     * @param array|null $queryParams
+     * @return string
+     */
+    public function doRequest(string $resource, array $queryParams = null): string
     {
-        if (is_array($queryParams) &&
-            !isset($queryParams['module'], $queryParams['action'], $queryParams['apiToken'])
-        ) {
-
-            throw new \InvalidArgumentException('Missing/Invalid query parameters');
-        }
-
         $url = $this->generateLink($resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);
