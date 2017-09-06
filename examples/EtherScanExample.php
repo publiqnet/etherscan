@@ -1,7 +1,11 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+use EtherScan\EtherScan;
+use EtherScan\Resources\ApiConnector;
 
-$etherScan = new EtherScan\EtherScan('BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H');
+require __DIR__ . '/../vendor/autoload.php';
+
+$esApiConnector = new ApiConnector('BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H', EtherScan::MODE_API);
+$etherScan = new EtherScan($esApiConnector);
 
 echo $etherScan->getStats()->getEthPrice();
