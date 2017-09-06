@@ -13,9 +13,9 @@ class EtherScan
     /** @var ApiConnector */
     private $apiConnector;
 
-    public function __construct()
+    public function __construct(string $apiKey)
     {
-        $this->apiConnector = ApiConnector::getInstance();
+        $this->apiConnector = ApiConnector::getInstance($apiKey);
         $this->stats = new Stats($this->apiConnector);
         $this->account = new Account($this->apiConnector);
     }
@@ -36,6 +36,7 @@ class EtherScan
         return $this->account;
     }
 
+    /*
     public function getTxLink(string $hash)
     {
         return $this->apiConnector->generateLink('', ApiConnector::RESOURCE_TX, $hash);
@@ -45,5 +46,6 @@ class EtherScan
     {
         return $this->apiConnector->generateLink('', ApiConnector::RESOURCE_TX, $address);
     }
+    */
 
 }

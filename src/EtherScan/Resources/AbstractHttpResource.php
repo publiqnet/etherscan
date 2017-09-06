@@ -7,7 +7,7 @@ use EtherScan\ApiConnector;
 abstract class AbstractHttpResource
 {
     /** @var ApiConnector */
-    private $apiConnector;
+    protected $apiConnector;
 
     public function __construct(ApiConnector $apiConnector)
     {

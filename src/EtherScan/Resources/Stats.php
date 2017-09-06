@@ -4,14 +4,18 @@ namespace EtherScan\Resources;
 
 class Stats extends AbstractHttpResource
 {
-    public function getEthPrice()
-    {
+    const MODULE = 'stats';
 
+    public function getEthPrice(bool $testMode = false)
+    {
+        $action = 'ethprice';
+        $this->apiConnector->generateLink(self::MODULE, $action, $testMode);
     }
 
-    public function getEthSupply()
+    public function getEthSupply(bool $testMode = false)
     {
-
+        $action = 'ethsupply';
+        $this->apiConnector->generateLink(self::MODULE, $action, $testMode);
     }
 
 }

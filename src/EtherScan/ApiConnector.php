@@ -13,37 +13,44 @@ class ApiConnector
     const RESOURCE_ADDRESS = 'address';
     const RESOURCE_API = 'api';
 
-    const URL_PATTERN = 'https://%s.etherscan.io/%s/';
-
     /** @var ApiConnector */
     private static $instance;
     /** @var resource */
     private $ch;
+    /** @var string */
+    private $apiKey;
 
-    private function __construct()
+    private function __construct(string $apiKey)
     {
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
             CURLOPT_CUSTOMREQUEST => ['Accept: application/json'],
             CURLOPT_HEADER => 'GET',
+            CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FOLLOWLOCATION => 1,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => 1,
         ]);
+        $this->apiKey = $apiKey;
     }
 
-    public static function getInstance()
+    public static function getInstance(string $apiKey)
     {
         if (!isset(self::$instance)) {
-            self::$instance = new self();
+            self::$instance = new self($apiKey);
         }
         return self::$instance;
     }
 
-    public function generateLink(string $prefix, string $path, string $query)
+    public function generateLink(string $module, string $action, bool $testMode, array $queryParams = null)
     {
-        return sprintf(self::URL_PATTERN, $prefix, $path, $query);
+        $defaultQuery = [
+            'module' => $module,
+            'action' => $action,
+            'apiKey' => $this->apiKey,
+        ];
+        $query = array_merge($defaultQuery, $queryParams);
+        return sprintf('https://%s.etherscan.io/?%s', 'api', http_build_query($query));
     }
 
     public function doRequest(string $url)
