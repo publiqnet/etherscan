@@ -17,8 +17,8 @@ class ApiConnector
     {
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
-            CURLOPT_CUSTOMREQUEST => ['Accept: application/json'],
-            CURLOPT_HEADER => 'GET',
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HEADER => ['Accept: application/json'],
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FOLLOWLOCATION => 1,
             CURLOPT_SSL_VERIFYHOST => 0,
