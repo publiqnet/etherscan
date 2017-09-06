@@ -2,20 +2,28 @@
 
 namespace EtherScan\Resources;
 
+use EtherScan\ApiConnector;
+
 class Stats extends AbstractHttpResource
 {
-    const MODULE = 'stats';
 
-    public function getEthPrice(bool $testMode = false)
+    public function __construct(ApiConnector $apiConnector)
     {
-        $action = 'ethprice';
-        $this->apiConnector->generateLink(self::MODULE, $action, $testMode);
+        parent::__construct($apiConnector);
+        $this->queryParams['action'] = 'stats';
     }
 
-    public function getEthSupply(bool $testMode = false)
+
+    public function getEthPrice()
     {
-        $action = 'ethsupply';
-        $this->apiConnector->generateLink(self::MODULE, $action, $testMode);
+        $this->queryParams['module'] = 'ethprice';
+        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $this->queryParams);
+    }
+
+    public function getEthSupply()
+    {
+        $this->queryParams['module'] = 'ethsupply';
+        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $this->queryParams);
     }
 
 }

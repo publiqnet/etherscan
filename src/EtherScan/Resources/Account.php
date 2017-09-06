@@ -2,41 +2,45 @@
 
 namespace EtherScan\Resources;
 
+use EtherScan\ApiConnector;
+
 class Account extends AbstractHttpResource
 {
-    const MODULE = 'account';
     const PAGE_SIZE = 25;
 
-    public function getBalance(string $address, bool $testMode = false)
+    public function __construct(ApiConnector $apiConnector)
     {
-        $action = 'balance';
-        $queryParams = [
-            'address' => $address,
-            'tag' => 'latest'
-        ];
-        $this->apiConnector->generateLink(self::MODULE, $action, $testMode, $queryParams);
+        parent::__construct($apiConnector);
+        $this->queryParams['action'] = 'account';
     }
 
-    public function getBalances(array $addressList, bool $testMode = false)
+    public function getBalance(string $address)
     {
-        $action = 'balancemulti';
-        $queryParams = [
-            'address' => implode(',', $addressList),
-            'tag' => 'latest'
-        ];
-        $this->apiConnector->generateLink(self::MODULE, $action, $testMode, $queryParams);
+        $this->queryParams['action'] = 'balance';
+        $this->queryParams['address'] = $address;
+        $this->queryParams['tag'] = 'latest';
+
+        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $this->queryParams);
     }
 
-    public function getTransactions(string $address, int $page, bool $testMode = false)
+    public function getBalances(array $addressList)
     {
-        $action = 'txlist';
-        $queryParams = [
-            'address' => $address,
-            'offset' => self::PAGE_SIZE,
-            'page' => $page + 1, //(page || 0) + 1, //
-            'sort' => 'desc'
-        ];
-        $this->apiConnector->generateLink(self::MODULE, $action, $testMode, $queryParams);
+        $this->queryParams['action'] = 'balancemulti';
+        $this->queryParams['address'] = implode(',', $addressList);
+        $this->queryParams['tag'] = 'latest';
+
+        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $this->queryParams);
+    }
+
+    public function getTransactions(string $address, int $page)
+    {
+        $this->queryParams['action'] = 'txlist';
+        $this->queryParams['address'] = $address;
+        $this->queryParams['offset'] = self::PAGE_SIZE;
+        $this->queryParams['page'] = $page + 1; //(page || 0) + 1, //
+        $this->queryParams['tag'] = 'latest';
+
+        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $this->queryParams);
     }
 
 }

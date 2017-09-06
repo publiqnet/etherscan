@@ -4,23 +4,16 @@ namespace EtherScan;
 
 class ApiConnector
 {
-    const PREFIX_DEFAULT = 'testnet';
-    const PREFIX_ROPSTEN = 'ropsten';
-    const PREFIX_RINKEBY = 'rinkeby';
-    const PREFIX_KOVAN = 'kovan';
-
-    const RESOURCE_TX = 'tx';
-    const RESOURCE_ADDRESS = 'address';
-    const RESOURCE_API = 'api';
-
     /** @var ApiConnector */
     private static $instance;
     /** @var resource */
     private $ch;
     /** @var string */
     private $apiKey;
+    /** @var string */
+    private $prefix;
 
-    private function __construct(string $apiKey)
+    private function __construct(string $apiKey, string $prefix)
     {
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
@@ -29,32 +22,45 @@ class ApiConnector
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FOLLOWLOCATION => 1,
             CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_SSL_VERIFYPEER => 0
         ]);
         $this->apiKey = $apiKey;
+        $this->prefix = $prefix;
     }
 
-    public static function getInstance(string $apiKey)
+    public static function getInstance(string $apiKey, string $prefix)
     {
         if (!isset(self::$instance)) {
-            self::$instance = new self($apiKey);
+            self::$instance = new self($apiKey, $prefix);
         }
         return self::$instance;
     }
 
-    public function generateLink(string $module, string $action, bool $testMode, array $queryParams = null)
+    public function generateLink(string $resource, array $queryParams = null)
     {
-        $defaultQuery = [
-            'module' => $module,
-            'action' => $action,
-            'apiKey' => $this->apiKey,
-        ];
-        $query = array_merge($defaultQuery, $queryParams);
-        return sprintf('https://%s.etherscan.io/?%s', 'api', http_build_query($query));
+        $query = '';
+        if (is_array($queryParams) && count($queryParams) > 0) {
+            $queryParams['apiKey'] = $this->apiKey;
+            $query = '?' . http_build_query($queryParams);
+        }
+
+        $url = sprintf('https://%s.etherscan.io/%s%s',
+            $this->prefix, $resource, $query
+        );
+
+        return $url;
     }
 
-    public function doRequest(string $url)
+    public function doRequest(string $resource, array $queryParams = null)
     {
+        if (is_array($queryParams) &&
+            !isset($queryParams['module'], $queryParams['action'], $queryParams['apiToken'])
+        ) {
+
+            throw new \InvalidArgumentException('Missing/Invalid query parameters');
+        }
+
+        $url = $this->generateLink($resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);
 
