@@ -4,8 +4,8 @@ require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Compos
 use EtherScan\Resources\ApiConnector;
 use PHPUnit\Framework\TestCase;
 
-define('API_KEY', 'BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H');
-define('PREFIX', 'mod_api');
+define('API_KEY', 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H');
+define('PREFIX', 'api');
 
 class ApiConnectorTest extends TestCase
 {
@@ -14,6 +14,20 @@ class ApiConnectorTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
         $this->conn = new ApiConnector(API_KEY, PREFIX);
+    }
+
+    public function testGenerateLink()
+    {
+        $responceUrl = "https://api.etherscan.io/api?module=stats&action=ethprice&apiKey=BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H";
+        $resource = 'api';
+        $queryParams = ['module' => 'stats', 'action' => 'ethprice'];
+
+        $this->assertTrue(is_string($resource), $resource);
+        $this->assertTrue(is_array($queryParams), $queryParams);
+
+        $url = $this->conn->generateLink($resource, $queryParams);
+
+        $this->assertEquals($responceUrl, $url);
     }
 
 }
