@@ -13,7 +13,7 @@ class Account extends AbstractHttpResource
      * @param string $address
      * @return string
      */
-    public function getBalance(string $address)
+    public function getBalance(string $address): string
     {
         $finalQuery = array_merge($this->queryParams, [
             'action' => 'balance',
@@ -21,6 +21,18 @@ class Account extends AbstractHttpResource
             'tag' => 'latest'
         ]);
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
+    }
+
+    public function getBalanceAsync(string $address,
+                                    callable $resolveHandler, callable $rejectHandler)
+    {
+        $finalQuery = array_merge($this->queryParams, [
+            'action' => 'balance',
+            'address' => $address,
+            'tag' => 'latest'
+        ]);
+        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler);
     }
 
     /**
@@ -37,6 +49,18 @@ class Account extends AbstractHttpResource
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
     }
 
+    public function getBalancesAsync(array $addressList,
+                                     callable $resolveHandler, callable $rejectHandler)
+    {
+        $finalQuery = array_merge($this->queryParams, [
+            'action' => 'balancemulti',
+            'address' => implode(',', $addressList),
+            'tag' => 'latest'
+        ]);
+        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler);
+    }
+
     /**
      * @param string $address
      * @param int $page
@@ -49,10 +73,24 @@ class Account extends AbstractHttpResource
             'action' => 'txlist',
             'address' => $address,
             'offset' => $pageSize,
-            'page' => $page,
-            'tag' => 'latest'
+            'page' => $page + 1,
+            'sort' => 'desc'
         ]);
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
+    }
+
+    public function getTransactionsAsync(string $address, int $page, int $pageSize,
+                                         callable $resolveHandler, callable $rejectHandler)
+    {
+        $finalQuery = array_merge($this->queryParams, [
+            'action' => 'txlist',
+            'address' => $address,
+            'offset' => $pageSize,
+            'page' => $page + 1,
+            'sort' => 'desc'
+        ]);
+        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler);
     }
 
 }

@@ -11,10 +11,17 @@ class Stats extends AbstractHttpResource
     /**
      * @return string
      */
-    public function getEthPrice()
+    public function getEthPrice(): string
     {
         $finalQuery = array_merge($this->queryParams, ['action' => 'ethprice']);
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
+    }
+
+    public function getEthPriceAsync(callable $resolveHandler, callable $rejectHandler)
+    {
+        $finalQuery = array_merge($this->queryParams, ['action' => 'ethprice']);
+        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler);
     }
 
     /**
@@ -24,6 +31,13 @@ class Stats extends AbstractHttpResource
     {
         $finalQuery = array_merge($this->queryParams, ['action' => 'ethsupply']);
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
+    }
+
+    public function getEthSupplyAsync(callable $resolveHandler, callable $rejectHandler)
+    {
+        $finalQuery = array_merge($this->queryParams, ['action' => 'ethsupply']);
+        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler);
     }
 
 }

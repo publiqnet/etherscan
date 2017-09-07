@@ -56,16 +56,19 @@ class ApiConnector
      * @param array|null $queryParams
      * @return string
      */
-    public function doRequest(string $resource, array $queryParams = null)
+    public function doRequest(string $resource, array $queryParams = null): string
+    {
+        $url = $this->generateLink($resource, $queryParams);
+        curl_setopt($this->ch, CURLOPT_URL, $url);
+        $result = curl_exec($this->ch);
+
+        return $result;
+    }
+
+    public function doRequestAsync(string $resource, array $queryParams, callable $resolve, callable $reject)
     {
         $promise = new Promise();
-        $promise
-            ->then(function ($value) {
-                echo $value;
-            })
-            ->then(function ($value) {
-                echo $value;
-            });
+        $promise->then($resolve, $reject);
 
         $url = $this->generateLink($resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
@@ -73,6 +76,7 @@ class ApiConnector
 
         $promise->resolve($result);
     }
+
 
     public function close()
     {
