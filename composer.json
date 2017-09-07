@@ -7,6 +7,7 @@
       "email": "info@blockchainrndhub.com"
     }
   ],
+  "license": "MIT",
   "minimum-stability": "stable",
   "require": {
     "php": "^7.0",
