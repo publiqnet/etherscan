@@ -2,20 +2,20 @@
 
 namespace EtherScan\Resources;
 
+use Exception;
+use GuzzleHttp\Promise\Promise;
+
 class ApiConnector
 {
     /** @var resource */
     private $ch;
     /** @var string */
     private $apiKey;
-    /** @var string */
-    private $prefix;
 
-    public function __construct(string $apiKey, string $prefix)
+    public function __construct(string $apiKey)
     {
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
-            CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => ['Accept: application/json'],
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FOLLOWLOCATION => 1,
@@ -23,7 +23,6 @@ class ApiConnector
             CURLOPT_SSL_VERIFYPEER => 0
         ]);
         $this->apiKey = $apiKey;
-        $this->prefix = $prefix;
     }
 
     /**
@@ -31,7 +30,7 @@ class ApiConnector
      * @param array|null $queryParams
      * @return string
      */
-    public function generateLink(string $resource, array $queryParams = null): string
+    public function generateLink(string $prefix, string $resource, array $queryParams = null): string
     {
         $query = '';
         if (is_array($queryParams) && count($queryParams) > 0) {
@@ -39,8 +38,8 @@ class ApiConnector
             $query = '?' . http_build_query($queryParams);
         }
 
-        $url = sprintf('https://%s.etherscan.io/%s%s',
-            $this->prefix, $resource, $query
+        $url = sprintf('https://%setherscan.io/%s%s',
+            $prefix, $resource, $query
         );
 
         return $url;
@@ -51,13 +50,39 @@ class ApiConnector
      * @param array|null $queryParams
      * @return string
      */
-    public function doRequest(string $resource, array $queryParams = null): string
+    public function doRequest(string $prefix, string $resource, array $queryParams = null): string
     {
-        $url = $this->generateLink($resource, $queryParams);
+        $url = $this->generateLink($prefix, $resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);
 
+        if ($result === false) {
+            throw new Exception('Network error: ' . curl_error($this->ch));
+        }
+
         return $result;
+    }
+
+    /**
+     * @param string $resource
+     * @param array $queryParams
+     * @param callable $resolve
+     * @param callable $reject
+     */
+    public function doRequestAsync(string $prefix, string $resource, array $queryParams, callable $resolve,
+                                   callable $reject)
+    {
+        $promise = new Promise();
+        $promise->then($resolve, $reject);
+
+        $result = $this->doRequest($prefix, $resource, $queryParams);
+        $oResult = json_decode($result);
+
+        if ($oResult->status == 1) {
+            $promise->resolve($result);
+        } else {
+            $promise->reject($result);
+        }
     }
 
     public function close()
@@ -69,5 +94,4 @@ class ApiConnector
     {
         $this->close();
     }
-
 }
