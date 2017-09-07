@@ -9,7 +9,14 @@ $esApiConnector = new ApiConnector('BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H', EtherSc
 
 $etherScan = new EtherScan($esApiConnector);
 
-$res = $etherScan->getStats()->getEthPrice();
-echo "<pre>"; print_r($res); echo "</pre>"; die();
+$res = $etherScan->getStats()->getEthPriceAsync(
+    function($result){
+        $result = json_decode($result, true);
+        echo "<pre>"; print_r($result); echo "</pre>";
+    },
+    function($result){
+        echo $result;
+    }
+);
 
-echo "hutul".PHP_EOL;
+echo "finish".PHP_EOL;
