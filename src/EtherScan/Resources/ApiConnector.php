@@ -2,6 +2,7 @@
 
 namespace EtherScan\Resources;
 
+use Exception;
 use GuzzleHttp\Promise\Promise;
 
 class ApiConnector
@@ -56,7 +57,7 @@ class ApiConnector
         $result = curl_exec($this->ch);
 
         if ($result === false) {
-            throw new \Exception('Network error: ' . curl_error($this->ch));
+            throw new Exception('Network error: ' . curl_error($this->ch));
         }
 
         return $result;
