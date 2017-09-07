@@ -10,10 +10,8 @@ class ApiConnector
     private $ch;
     /** @var string */
     private $apiKey;
-    /** @var string */
-    private $prefix;
 
-    public function __construct(string $apiKey, string $prefix)
+    public function __construct(string $apiKey)
     {
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
@@ -24,7 +22,6 @@ class ApiConnector
             CURLOPT_SSL_VERIFYPEER => 0
         ]);
         $this->apiKey = $apiKey;
-        $this->prefix = $prefix;
     }
 
     /**
@@ -32,7 +29,7 @@ class ApiConnector
      * @param array|null $queryParams
      * @return string
      */
-    public function generateLink(string $resource, array $queryParams = null): string
+    public function generateLink(string $prefix, string $resource, array $queryParams = null): string
     {
         $query = '';
         if (is_array($queryParams) && count($queryParams) > 0) {
@@ -40,8 +37,8 @@ class ApiConnector
             $query = '?' . http_build_query($queryParams);
         }
 
-        $url = sprintf('https://%s.etherscan.io/%s%s',
-            $this->prefix, $resource, $query
+        $url = sprintf('https://%setherscan.io/%s%s',
+            $prefix, $resource, $query
         );
 
         return $url;
@@ -52,9 +49,9 @@ class ApiConnector
      * @param array|null $queryParams
      * @return string
      */
-    public function doRequest(string $resource, array $queryParams = null): string
+    public function doRequest(string $prefix, string $resource, array $queryParams = null): string
     {
-        $url = $this->generateLink($resource, $queryParams);
+        $url = $this->generateLink($prefix, $resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);
 
@@ -65,12 +62,19 @@ class ApiConnector
         return $result;
     }
 
-    public function doRequestAsync(string $resource, array $queryParams, callable $resolve, callable $reject)
+    /**
+     * @param string $resource
+     * @param array $queryParams
+     * @param callable $resolve
+     * @param callable $reject
+     */
+    public function doRequestAsync(string $prefix, string $resource, array $queryParams, callable $resolve,
+                                   callable $reject)
     {
         $promise = new Promise();
         $promise->then($resolve, $reject);
 
-        $result = $this->doRequest($resource, $queryParams);
+        $result = $this->doRequest($prefix, $resource, $queryParams);
         $oResult = json_decode($result);
 
         if ($oResult->status == 1) {
@@ -79,7 +83,6 @@ class ApiConnector
             $promise->reject($result);
         }
     }
-
 
     public function close()
     {

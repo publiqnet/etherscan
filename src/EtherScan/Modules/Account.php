@@ -20,7 +20,7 @@ class Account extends AbstractHttpResource
             'address' => $address,
             'tag' => 'latest'
         ]);
-        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
+        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
     }
 
     /**
@@ -36,8 +36,10 @@ class Account extends AbstractHttpResource
             'address' => $address,
             'tag' => 'latest'
         ]);
-        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler);
+        $this->apiConnector->doRequestAsync(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler
+        );
     }
 
     /**
@@ -51,7 +53,7 @@ class Account extends AbstractHttpResource
             'address' => implode(',', $addressList),
             'tag' => 'latest'
         ]);
-        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
+        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
     }
 
     /**
@@ -67,8 +69,10 @@ class Account extends AbstractHttpResource
             'address' => implode(',', $addressList),
             'tag' => 'latest'
         ]);
-        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler);
+        $this->apiConnector->doRequestAsync(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler
+        );
     }
 
     /**
@@ -83,10 +87,10 @@ class Account extends AbstractHttpResource
             'action' => 'txlist',
             'address' => $address,
             'offset' => $pageSize,
-            'page' => $page + 1,
+            'page' => $page,
             'sort' => 'desc'
         ]);
-        return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
+        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
     }
 
     /**
@@ -103,11 +107,13 @@ class Account extends AbstractHttpResource
             'action' => 'txlist',
             'address' => $address,
             'offset' => $pageSize,
-            'page' => $page + 1,
+            'page' => $page,
             'sort' => 'desc'
         ]);
-        $this->apiConnector->doRequestAsync(AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler);
+        $this->apiConnector->doRequestAsync(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
+            $resolveHandler, $rejectHandler
+        );
     }
 
 }
