@@ -13,14 +13,10 @@ class ApiConnector
     /** @var string */
     private $prefix;
 
-    /** @var string */
-    private $deferred;
-
     public function __construct(string $apiKey, string $prefix)
     {
         $this->ch = curl_init();
         curl_setopt_array($this->ch, [
-            CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => ['Accept: application/json'],
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FOLLOWLOCATION => 1,
@@ -62,6 +58,10 @@ class ApiConnector
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);
 
+        if ($result === false) {
+            throw new \Exception('Network error: ' . curl_error($this->ch));
+        }
+
         return $result;
     }
 
@@ -71,7 +71,13 @@ class ApiConnector
         $promise->then($resolve, $reject);
 
         $result = $this->doRequest($resource, $queryParams);
-        $promise->resolve($result);
+        $oResult = json_decode($result);
+
+        if ($oResult->status == 1) {
+            $promise->resolve($result);
+        } else {
+            $promise->reject($result);
+        }
     }
 
 
