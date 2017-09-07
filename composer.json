@@ -8,7 +8,7 @@
     }
   ],
   "license": "MIT",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "require": {
     "php": "^7.0",
     "guzzlehttp/promises": "^1.3"
