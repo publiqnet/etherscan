@@ -70,10 +70,7 @@ class ApiConnector
         $promise = new Promise();
         $promise->then($resolve, $reject);
 
-        $url = $this->generateLink($resource, $queryParams);
-        curl_setopt($this->ch, CURLOPT_URL, $url);
-        $result = curl_exec($this->ch);
-
+        $result = $this->doRequest($resource, $queryParams);
         $promise->resolve($result);
     }
 

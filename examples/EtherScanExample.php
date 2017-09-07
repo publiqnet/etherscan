@@ -6,9 +6,7 @@ use EtherScan\Resources\ApiConnector;
 require __DIR__ . '/../vendor/autoload.php';
 
 $esApiConnector = new ApiConnector('BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H', EtherScan::MODE_API);
-
 $etherScan = new EtherScan($esApiConnector);
 
-$etherScan->getAccount()->getBalance('test111');
-
-echo "hutul".PHP_EOL;
+echo $etherScan->getStats()->getEthPrice() . PHP_EOL;
+echo "END OF FILE" . PHP_EOL;
