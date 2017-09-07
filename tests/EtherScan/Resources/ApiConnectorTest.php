@@ -1,8 +1,7 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
+require_once __DIR__ . '/../../../vendor/autoload.php'; // Autoload files using Composer autoload
 
 use EtherScan\Resources\ApiConnector;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
 define('API_KEY', 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H');
