@@ -11,7 +11,7 @@ class Stats extends AbstractHttpResource
     /**
      * @return string
      */
-    public function getEthPrice(): string
+    public function getEthPrice()
     {
         $finalQuery = array_merge($this->queryParams, ['action' => 'ethprice']);
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);

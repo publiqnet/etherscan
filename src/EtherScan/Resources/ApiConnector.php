@@ -2,6 +2,8 @@
 
 namespace EtherScan\Resources;
 
+use GuzzleHttp\Promise\Promise;
+
 class ApiConnector
 {
     /** @var resource */
@@ -10,6 +12,9 @@ class ApiConnector
     private $apiKey;
     /** @var string */
     private $prefix;
+
+    /** @var string */
+    private $deferred;
 
     public function __construct(string $apiKey, string $prefix)
     {
@@ -51,13 +56,22 @@ class ApiConnector
      * @param array|null $queryParams
      * @return string
      */
-    public function doRequest(string $resource, array $queryParams = null): string
+    public function doRequest(string $resource, array $queryParams = null)
     {
+        $promise = new Promise();
+        $promise
+            ->then(function ($value) {
+                echo $value;
+            })
+            ->then(function ($value) {
+                echo $value;
+            });
+
         $url = $this->generateLink($resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);
 
-        return $result;
+        $promise->resolve($result);
     }
 
     public function close()
@@ -69,5 +83,4 @@ class ApiConnector
     {
         $this->close();
     }
-
 }

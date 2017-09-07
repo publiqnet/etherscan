@@ -13,12 +13,12 @@ class Account extends AbstractHttpResource
      * @param string $address
      * @return string
      */
-    public function getBalance(string $address): string
+    public function getBalance(string $address)
     {
         $finalQuery = array_merge($this->queryParams, [
             'action' => 'balance',
             'address' => $address,
-            'tag' => 'balanlatestce'
+            'tag' => 'latest'
         ]);
         return $this->apiConnector->doRequest(AbstractHttpResource::RESOURCE_API, $finalQuery);
     }
