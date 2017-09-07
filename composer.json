@@ -1,12 +1,13 @@
 {
   "name": "blockchainrndhub/etherscan",
-  "description": "Etherscan description",
+  "description": "This lib is created for connecting to etherscan.io's api using php.",
   "authors": [
     {
       "name": "Blockchain R&D Hub",
       "email": "info@blockchainrndhub.com"
     }
   ],
+  "license": "MIT",
   "minimum-stability": "stable",
   "require": {
     "php": "^7.0",
