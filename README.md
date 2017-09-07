@@ -6,7 +6,7 @@
 <li>sync
 
 ```
-$esApiConnector = new ApiConnector('BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H', EtherScan::MODE_API);
+$esApiConnector = new ApiConnector('your_api_key', EtherScan::MODE_API);
 $etherScan = new EtherScan($esApiConnector);
 
 echo $etherScan->getStats()->getEthPrice() . PHP_EOL;
@@ -17,7 +17,7 @@ echo "END OF FILE" . PHP_EOL;
 <li>async
 
 ```
-$esApiConnector = new ApiConnector('BZ34DW4M5J6XZIQV5DWBC2MJV32V955Q1H', EtherScan::MODE_API);
+$esApiConnector = new ApiConnector('your_api_key', EtherScan::MODE_API);
 $etherScan = new EtherScan($esApiConnector);
 
 echo $etherScan->getStats()->getEthPriceAsync(
@@ -33,4 +33,6 @@ echo "END OF FILE" . PHP_EOL;
 
 </li>
 </ul>
+
+<p>It uses the guzzlehttp/promises to allow aync calls</p>
 </p>
