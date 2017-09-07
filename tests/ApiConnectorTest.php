@@ -30,4 +30,20 @@ class ApiConnectorTest extends TestCase
         $this->assertEquals($responceUrl, $url);
     }
 
+    public function testDoRequest()
+    {
+        $resource = 'api';
+        $queryParams = ['module' => 'stats', 'action' => 'ethprice'];
+
+        $responce = $this->conn->doRequest($resource, $queryParams);
+        $this->assertJson($responce);
+        $responceDecoded = json_decode($responce, true);
+
+        $this->assertArrayHasKey('status', $responceDecoded);
+        $this->assertArrayHasKey('message', $responceDecoded);
+        $this->assertArrayHasKey('result', $responceDecoded);
+
+        $this->assertEquals('OK', $responceDecoded['message']);
+    }
+
 }
