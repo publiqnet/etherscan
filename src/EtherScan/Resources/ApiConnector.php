@@ -3,7 +3,8 @@
 namespace EtherScan\Resources;
 
 use Exception;
-use GuzzleHttp\Promise\Promise;
+use React\EventLoop\Factory;
+use React\HttpClient\Client;
 
 class ApiConnector
 {
@@ -11,6 +12,8 @@ class ApiConnector
     private $ch;
     /** @var string */
     private $apiKey;
+    private $httpClient;
+    private $eventLoop;
 
     public function __construct(string $apiKey)
     {
@@ -23,6 +26,10 @@ class ApiConnector
             CURLOPT_SSL_VERIFYPEER => 0
         ]);
         $this->apiKey = $apiKey;
+
+        $this->eventLoop = Factory::create();
+        $this->httpClient = new Client($this->eventLoop);
+
     }
 
     /**
@@ -72,17 +79,15 @@ class ApiConnector
     public function doRequestAsync(string $prefix, string $resource, array $queryParams, callable $resolve,
                                    callable $reject)
     {
-        $promise = new Promise();
-        $promise->then($resolve, $reject);
+        $url = $this->generateLink($prefix, $resource, $queryParams);
 
-        $result = $this->doRequest($prefix, $resource, $queryParams);
-        $oResult = json_decode($result);
+        $request = $this->httpClient->request('GET', $url);
+        $request->on('response', function (\React\HttpClient\Response $response) use ($resolve) {
+            $response->on('data', $response);
+        });
 
-        if ($oResult->status == 1) {
-            $promise->resolve($result);
-        } else {
-            $promise->reject($result);
-        }
+        $request->end();
+        $this->eventLoop->run();
     }
 
     public function close()
