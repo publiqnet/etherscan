@@ -4,11 +4,10 @@ require_once __DIR__ . '/../../../vendor/autoload.php'; // Autoload files using 
 use EtherScan\Resources\ApiConnector;
 use PHPUnit\Framework\TestCase;
 
-define('API_KEY', 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H');
-define('PREFIX', 'api.');
-
 class ApiConnectorTest extends TestCase
 {
+    private $apiKey = 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H';
+    private $prefix = 'api.';
     private $conn;
     private $doAsyncRequestResponce = [
         'status' => 1,
@@ -25,12 +24,12 @@ class ApiConnectorTest extends TestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->conn = new ApiConnector(API_KEY);
+        $this->conn = new ApiConnector($this->apiKey);
     }
 
     public function doAsyncRequest(){
         $mock = $this->getMockBuilder(ApiConnector::class)
-            ->setConstructorArgs([API_KEY])
+            ->setConstructorArgs([$this->apiKey])
             ->setMethods(['doRequestAsync'])
             ->getMock();
 
@@ -51,7 +50,7 @@ class ApiConnectorTest extends TestCase
         $this->assertTrue(is_string($resource), $resource);
         $this->assertTrue(is_array($queryParams), $queryParams);
 
-        $url = $this->conn->generateLink(PREFIX, $resource, $queryParams);
+        $url = $this->conn->generateLink($this->prefix, $resource, $queryParams);
         $this->assertEquals($responceUrl, $url);
     }
 
@@ -60,7 +59,7 @@ class ApiConnectorTest extends TestCase
         $resource = 'api';
         $queryParams = ['module' => 'stats', 'action' => 'ethprice'];
 
-        $responce = $this->conn->doRequest(PREFIX, $resource, $queryParams);
+        $responce = $this->conn->doRequest($this->prefix, $resource, $queryParams);
         $this->assertJson($responce);
         $responceDecoded = json_decode($responce, true);
 
@@ -75,7 +74,7 @@ class ApiConnectorTest extends TestCase
     {
         $resource = 'api';
         $queryParams = ['module' => 'stats', 'action' => 'ethprice'];
-        $result = $this->doAsyncRequest()->doRequestAsync(PREFIX, $resource, $queryParams, function ($resolve){}, function ($reject){});
+        $result = $this->doAsyncRequest()->doRequestAsync($this->prefix, $resource, $queryParams, function ($resolve){}, function ($reject){});
         $this->assertJson($result);
         $responceDecoded = json_decode($result, true);
 
