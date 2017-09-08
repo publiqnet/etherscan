@@ -25,7 +25,7 @@ echo $etherScan->getStats()->getEthPriceAsync(
             echo 'Called on resolve: ' . $responseOnResolve . PHP_EOL;
         },
         function ($responseOnReject) {
-            echo 'Called on resolve: ' . $responseOnReject . PHP_EOL;
+            echo 'Called on reject: ' . $responseOnReject . PHP_EOL;
         }
     );
 echo "END OF FILE" . PHP_EOL;
