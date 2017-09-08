@@ -6,10 +6,11 @@
 <li>sync
 
 ```
-$esApiConnector = new ApiConnector('your_api_key', EtherScan::MODE_API);
+$esApiConnector = new ApiConnector('your_api_key');
 $etherScan = new EtherScan($esApiConnector);
 
-echo $etherScan->getStats()->getEthPrice() . PHP_EOL;
+echo $etherScan->getAccount(EtherScan::PREFIX_API)->getTransactions('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1) . PHP_EOL;
+echo $etherScan->getTxLink('0x14dc46124c7cc003c158eb6ba812b2f53d509753fd931607edad957504d19bd3');
 echo "END OF FILE" . PHP_EOL;
 ```
 
@@ -17,17 +18,17 @@ echo "END OF FILE" . PHP_EOL;
 <li>async
 
 ```
-$esApiConnector = new ApiConnector('your_api_key', EtherScan::MODE_API);
+$esApiConnector = new ApiConnector('your_api_key');
 $etherScan = new EtherScan($esApiConnector);
 
-echo $etherScan->getStats()->getEthPriceAsync(
-        function ($responseOnResolve) {
-            echo 'Called on resolve: ' . $responseOnResolve . PHP_EOL;
-        },
-        function ($responseOnReject) {
-            echo 'Called on resolve: ' . $responseOnReject . PHP_EOL;
-        }
-    );
+echo $etherScan->getStats(EtherScan::PREFIX_API)->getEthPriceAsync(
+    function ($responseOnResolve) {
+        echo 'Called on resolve: ' . $responseOnResolve . PHP_EOL;
+    },
+    function ($responseOnReject) {
+        echo 'Called on resolve: ' . $responseOnReject . PHP_EOL;
+    }
+);
 echo "END OF FILE" . PHP_EOL;
 ```
 
