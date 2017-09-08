@@ -57,4 +57,16 @@ class EtherScan
         return $this->apiConnector->generateLink('', AbstractHttpResource::RESOURCE_ADDRESS . '/' . $address);
     }
 
+    /**
+     * @param array $calls
+     */
+    public function callGroupAsync(array $calls)
+    {
+        foreach ($calls as $call) {
+            $this->apiConnector->enlistRequest($call[0], $call[1], $call[2]);
+        }
+
+        $this->apiConnector->getEventLoop()->run();
+    }
+
 }

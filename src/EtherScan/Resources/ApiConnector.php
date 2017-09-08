@@ -4,7 +4,9 @@ namespace EtherScan\Resources;
 
 use Exception;
 use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
 use React\HttpClient\Client;
+use React\HttpClient\Response;
 
 class ApiConnector
 {
@@ -12,7 +14,9 @@ class ApiConnector
     private $ch;
     /** @var string */
     private $apiKey;
+    /** @var Client */
     private $httpClient;
+    /** @var LoopInterface */
     private $eventLoop;
 
     public function __construct(string $apiKey)
@@ -29,10 +33,10 @@ class ApiConnector
 
         $this->eventLoop = Factory::create();
         $this->httpClient = new Client($this->eventLoop);
-
     }
 
     /**
+     * @param string $prefix
      * @param string $resource
      * @param array|null $queryParams
      * @return string
@@ -53,13 +57,12 @@ class ApiConnector
     }
 
     /**
-     * @param string $resource
-     * @param array|null $queryParams
+     * @param string $url
      * @return string
+     * @throws Exception
      */
-    public function doRequest(string $prefix, string $resource, array $queryParams = null): string
+    public function doRequest(string $url): string
     {
-        $url = $this->generateLink($prefix, $resource, $queryParams);
         curl_setopt($this->ch, CURLOPT_URL, $url);
         $result = curl_exec($this->ch);
 
@@ -71,23 +74,26 @@ class ApiConnector
     }
 
     /**
-     * @param string $resource
-     * @param array $queryParams
+     * @param string $url
      * @param callable $resolve
-     * @param callable $reject
      */
-    public function doRequestAsync(string $prefix, string $resource, array $queryParams, callable $resolve,
-                                   callable $reject)
+    public function enlistRequest(string $url, callable $onResponse, callable $onError)
     {
-        $url = $this->generateLink($prefix, $resource, $queryParams);
-
         $request = $this->httpClient->request('GET', $url);
-        $request->on('response', function (\React\HttpClient\Response $response) use ($resolve) {
-            $response->on('data', $response);
-        });
-
+        $request->on('response',
+            function (Response $response) use ($onResponse) {
+                $response->on('data', $onResponse);
+            });
+        $request->on('error', $onError);
         $request->end();
-        $this->eventLoop->run();
+    }
+
+    /**
+     * @return \React\EventLoop\ExtEventLoop|\React\EventLoop\LibEventLoop|\React\EventLoop\LibEvLoop|\React\EventLoop\StreamSelectLoop
+     */
+    public function getEventLoop()
+    {
+        return $this->eventLoop;
     }
 
     public function close()

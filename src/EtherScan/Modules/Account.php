@@ -3,10 +3,13 @@
 namespace EtherScan\Modules;
 
 use EtherScan\Resources\AbstractHttpResource;
+use InvalidArgumentException;
 
 class Account extends AbstractHttpResource
 {
-    const PAGE_SIZE = 25;
+    const SORT_DESC = 'desc';
+    const SORT_ASC = 'asc';
+
     private $queryParams = ['module' => 'account'];
 
     /**
@@ -15,30 +18,22 @@ class Account extends AbstractHttpResource
      */
     public function getBalance(string $address): string
     {
-        $finalQuery = array_merge($this->queryParams, [
-            'action' => 'balance',
-            'address' => $address,
-            'tag' => 'latest'
-        ]);
-        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
+        $url = $this->getBalanceLink($address);
+        return $this->apiConnector->doRequest($url);
     }
 
     /**
      * @param string $address
-     * @param callable $resolveHandler
-     * @param callable $rejectHandler
      */
-    public function getBalanceAsync(string $address,
-                                    callable $resolveHandler, callable $rejectHandler)
+    public function getBalanceLink(string $address)
     {
         $finalQuery = array_merge($this->queryParams, [
             'action' => 'balance',
             'address' => $address,
             'tag' => 'latest'
         ]);
-        $this->apiConnector->doRequestAsync(
-            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler
+        return $this->apiConnector->generateLink(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery
         );
     }
 
@@ -48,30 +43,23 @@ class Account extends AbstractHttpResource
      */
     public function getBalances(array $addressList): string
     {
-        $finalQuery = array_merge($this->queryParams, [
-            'action' => 'balancemulti',
-            'address' => implode(',', $addressList),
-            'tag' => 'latest'
-        ]);
-        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
+        $url = $this->getBalancesLink($addressList);
+        return $this->apiConnector->doRequest($url);
     }
 
     /**
      * @param array $addressList
-     * @param callable $resolveHandler
-     * @param callable $rejectHandler
+     * @return string
      */
-    public function getBalancesAsync(array $addressList,
-                                     callable $resolveHandler, callable $rejectHandler)
+    public function getBalancesLink(array $addressList)
     {
         $finalQuery = array_merge($this->queryParams, [
             'action' => 'balancemulti',
             'address' => implode(',', $addressList),
             'tag' => 'latest'
         ]);
-        $this->apiConnector->doRequestAsync(
-            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler
+        return $this->apiConnector->generateLink(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery
         );
     }
 
@@ -81,38 +69,34 @@ class Account extends AbstractHttpResource
      * @param int $pageSize
      * @return string
      */
-    public function getTransactions(string $address, int $page, int $pageSize = Account::PAGE_SIZE): string
+    public function getTransactions(string $address, int $page, int $pageSize, string $sort): string
     {
-        $finalQuery = array_merge($this->queryParams, [
-            'action' => 'txlist',
-            'address' => $address,
-            'offset' => $pageSize,
-            'page' => $page,
-            'sort' => 'desc'
-        ]);
-        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
+        $url = $this->getTransactionsLink($address, $page, $pageSize, $sort);
+        return $this->apiConnector->doRequest($url);
     }
 
     /**
      * @param string $address
      * @param int $page
      * @param int $pageSize
-     * @param callable $resolveHandler
-     * @param callable $rejectHandler
+     * @param string $sort
+     * @return string
+     * @throws InvalidArgumentException
      */
-    public function getTransactionsAsync(string $address, int $page, int $pageSize,
-                                         callable $resolveHandler, callable $rejectHandler)
+    public function getTransactionsLink(string $address, int $page, int $pageSize, string $sort)
     {
+        if ($sort != Account::SORT_ASC && $sort != Account::SORT_DESC) {
+            throw new InvalidArgumentException('Argument sort is invalid');
+        }
         $finalQuery = array_merge($this->queryParams, [
             'action' => 'txlist',
             'address' => $address,
             'offset' => $pageSize,
             'page' => $page,
-            'sort' => 'desc'
+            'sort' => $sort
         ]);
-        $this->apiConnector->doRequestAsync(
-            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler
+        return $this->apiConnector->generateLink(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery
         );
     }
 
