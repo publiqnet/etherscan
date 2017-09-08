@@ -5,11 +5,10 @@ use EtherScan\Modules\Account;
 use EtherScan\Resources\ApiConnector;
 use PHPUnit\Framework\TestCase;
 
-define('API_KEY', 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H');
-define('PREFIX', 'api.');
-
 class AccountTest extends TestCase
 {
+    private $apiKey = 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H';
+    private $prefix = 'api.';
     private $conn;
     private $account;
     private $address = '0xbb9bc244d798123fde783fcc1c72d3bb8c189413';
@@ -57,8 +56,8 @@ class AccountTest extends TestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->conn = new ApiConnector(API_KEY);
-        $this->account = new Account($this->conn, PREFIX);
+        $this->conn = new ApiConnector($this->apiKey);
+        $this->account = new Account($this->conn, $this->prefix);
     }
 
     public function testGetBalance()
@@ -80,7 +79,7 @@ class AccountTest extends TestCase
     public function getBalanceAsyncMock()
     {
         $mock = $this->getMockBuilder(Account::class)
-            ->setConstructorArgs([new ApiConnector(API_KEY), PREFIX])
+            ->setConstructorArgs([new ApiConnector($this->apiKey), $this->prefix])
             ->setMethods(['getBalanceAsync'])
             ->getMock();
 
@@ -129,7 +128,7 @@ class AccountTest extends TestCase
     public function getBalancesAsyncMock()
     {
         $mock = $this->getMockBuilder(Account::class)
-            ->setConstructorArgs([new ApiConnector(API_KEY), PREFIX])
+            ->setConstructorArgs([new ApiConnector($this->apiKey), $this->prefix])
             ->setMethods(['getBalancesAsync'])
             ->getMock();
 
@@ -195,7 +194,7 @@ class AccountTest extends TestCase
     public function getTransactionsAsyncMock()
     {
         $mock = $this->getMockBuilder(Account::class)
-            ->setConstructorArgs([new ApiConnector(API_KEY), PREFIX])
+            ->setConstructorArgs([new ApiConnector($this->apiKey), $this->prefix])
             ->setMethods(['getTransactionsAsync'])
             ->getMock();
 

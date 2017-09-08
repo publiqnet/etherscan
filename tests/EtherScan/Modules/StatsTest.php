@@ -6,11 +6,10 @@ use EtherScan\Modules\Stats;
 use EtherScan\Resources\ApiConnector;
 use PHPUnit\Framework\TestCase;
 
-define('API_KEY', 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H');
-define('PREFIX', 'api.');
-
 class StatsTest extends TestCase
 {
+    private $apiKey = 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H';
+    private $prefix = 'api.';
     private $conn;
     private $stats;
     private $getEthPriceAsyncResponce = [
@@ -33,8 +32,8 @@ class StatsTest extends TestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->conn = new ApiConnector(API_KEY);
-        $this->stats = new Stats($this->conn, PREFIX);
+        $this->conn = new ApiConnector($this->apiKey);
+        $this->stats = new Stats($this->conn, $this->prefix);
     }
 
     public function testGetEthPrice()
@@ -56,7 +55,7 @@ class StatsTest extends TestCase
 
     private function getEthPriceAsyncMock(){
         $mock = $this->getMockBuilder(Stats::class)
-            ->setConstructorArgs([new ApiConnector(API_KEY), PREFIX])
+            ->setConstructorArgs([new ApiConnector($this->apiKey), $this->prefix])
             ->setMethods(['getEthPriceAsync'])
             ->getMock();
 
@@ -103,7 +102,7 @@ class StatsTest extends TestCase
 
     private function getEthSupplyAsyncMock(){
         $mock = $this->getMockBuilder(Stats::class)
-            ->setConstructorArgs([new ApiConnector(API_KEY), PREFIX])
+            ->setConstructorArgs([new ApiConnector($this->apiKey), $this->prefix])
             ->setMethods(['getEthSupplyAsync'])
             ->getMock();
 
