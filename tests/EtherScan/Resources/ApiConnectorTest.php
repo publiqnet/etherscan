@@ -85,5 +85,4 @@ class ApiConnectorTest extends TestCase
 
         $this->assertEquals('OK', $responceDecoded['message']);
     }
-
 }
