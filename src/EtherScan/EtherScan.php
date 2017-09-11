@@ -32,7 +32,7 @@ class EtherScan
     /**
      * @return Stats
      */
-    public function getStats(string $prefix): Stats
+    public function getStats(string $prefix = EtherScan::PREFIX_API): Stats
     {
         return new Stats($this->apiConnector, $prefix);
     }
@@ -40,7 +40,7 @@ class EtherScan
     /**
      * @return Account
      */
-    public function getAccount(string $prefix): Account
+    public function getAccount(string $prefix = EtherScan::PREFIX_API): Account
     {
         return new Account($this->apiConnector, $prefix);
     }
