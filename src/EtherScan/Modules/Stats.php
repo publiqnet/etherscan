@@ -13,16 +13,18 @@ class Stats extends AbstractHttpResource
      */
     public function getEthPrice(): string
     {
-        $finalQuery = array_merge($this->queryParams, ['action' => 'ethprice']);
-        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
+        $url = $this->getEthPriceLink();
+        return $this->apiConnector->doRequest($url);
     }
 
-    public function getEthPriceAsync(callable $resolveHandler, callable $rejectHandler)
+    /**
+     * @return string
+     */
+    public function getEthPriceLink()
     {
         $finalQuery = array_merge($this->queryParams, ['action' => 'ethprice']);
-        $this->apiConnector->doRequestAsync(
-            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler
+        return $this->apiConnector->generateLink(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery
         );
     }
 
@@ -31,16 +33,18 @@ class Stats extends AbstractHttpResource
      */
     public function getEthSupply(): string
     {
-        $finalQuery = array_merge($this->queryParams, ['action' => 'ethsupply']);
-        return $this->apiConnector->doRequest($this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery);
+        $url = $this->getEthSupplyLink();
+        return $this->apiConnector->doRequest($url);
     }
 
-    public function getEthSupplyAsync(callable $resolveHandler, callable $rejectHandler)
+    /**
+     * @return string
+     */
+    public function getEthSupplyLink()
     {
         $finalQuery = array_merge($this->queryParams, ['action' => 'ethsupply']);
-        $this->apiConnector->doRequestAsync(
-            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery,
-            $resolveHandler, $rejectHandler
+        return $this->apiConnector->generateLink(
+            $this->prefix, AbstractHttpResource::RESOURCE_API, $finalQuery
         );
     }
 
