@@ -9,10 +9,10 @@ require __DIR__ . '/../vendor/autoload.php';
 $esApiConnector = new ApiConnector('your_api_key');
 $etherScan = new EtherScan($esApiConnector);
 $a = function ($responseOnResolve) {
-    echo 'Called on error: ' . $responseOnResolve . PHP_EOL;
+    echo 'Called on resolve: ' . $responseOnResolve . PHP_EOL;
 };
 $b = function ($responseOnResolve) {
-    echo 'Called on resolve: ' . PHP_EOL;
+    echo 'Called on error: ' . $responseOnResolve . PHP_EOL;
 };
 $account = $etherScan->getAccount(EtherScan::PREFIX_API);
 $startT = microtime(1);

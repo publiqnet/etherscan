@@ -9,9 +9,17 @@
 $esApiConnector = new ApiConnector('your_api_key');
 $etherScan = new EtherScan($esApiConnector);
 
-echo $etherScan->getAccount(EtherScan::PREFIX_API)->getTransactions('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1) . PHP_EOL;
-echo $etherScan->getTxLink('0x14dc46124c7cc003c158eb6ba812b2f53d509753fd931607edad957504d19bd3');
-echo "END OF FILE" . PHP_EOL;
+
+$account = $etherScan->getAccount(EtherScan::PREFIX_API);
+$startT = microtime(1);
+echo $account->getTransactions('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1, 25, 'desc') . PHP_EOL;
+echo $account->getTransactions('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1, 25, 'desc') . PHP_EOL;
+echo $account->getTransactions('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1, 25, 'desc') . PHP_EOL;
+echo $account->getTransactions('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1, 25, 'desc') . PHP_EOL;
+$endT = microtime(1);
+
+
+echo "DONE IN: " . ($endT - $startT);
 ```
 
 </li>
@@ -20,16 +28,36 @@ echo "END OF FILE" . PHP_EOL;
 ```
 $esApiConnector = new ApiConnector('your_api_key');
 $etherScan = new EtherScan($esApiConnector);
+$a = function ($responseOnResolve) {
+    echo 'Called on resolve: ' . $responseOnResolve . PHP_EOL;
+};
+$b = function ($responseOnResolve) {
+    echo 'Called on error: ' . $responseOnResolve . PHP_EOL;
+};
+$account = $etherScan->getAccount(EtherScan::PREFIX_API);
+$startT = microtime(1);
 
-echo $etherScan->getStats(EtherScan::PREFIX_API)->getEthPriceAsync(
-    function ($responseOnResolve) {
-        echo 'Called on resolve: ' . $responseOnResolve . PHP_EOL;
-    },
-    function ($responseOnReject) {
-        echo 'Called on reject: ' . $responseOnReject . PHP_EOL;
-    }
-);
-echo "END OF FILE" . PHP_EOL;
+$etherScan->callGroupAsync([
+    [
+        $account->getTransactionsLink('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1, 25, Account::SORT_DESC),
+        $a, $b
+    ],
+    [
+        $account->getTransactionsLink('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1, 25, Account::SORT_DESC),
+        $a, $b
+    ],
+    [
+        $account->getBalanceLink('0xbb9bc244d798123fde783fcc1c72d3bb8c189413'),
+        $a, $b
+    ],
+    [
+        $account->getTransactionsLink('0xbb9bc244d798123fde783fcc1c72d3bb8c189413', 1, 25, Account::SORT_DESC),
+        $a, $b
+    ],
+]);
+$endT = microtime(1);
+
+echo "DONE IN: " . ($endT - $startT);
 ```
 
 </li>
