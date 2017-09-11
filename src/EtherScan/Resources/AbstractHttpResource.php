@@ -2,6 +2,12 @@
 
 namespace EtherScan\Resources;
 
+/**
+ * Class AbstractHttpResource
+ * @package EtherScan\Resources
+ *
+ * Base class for modules
+ */
 abstract class AbstractHttpResource
 {
     const RESOURCE_TX = 'tx';
