@@ -5,6 +5,12 @@ namespace EtherScan\Modules;
 use EtherScan\Resources\AbstractHttpResource;
 use InvalidArgumentException;
 
+/**
+ * Class Account
+ * @package EtherScan\Modules
+ *
+ * Represents the account module of the etherscan.io api
+ */
 class Account extends AbstractHttpResource
 {
     const SORT_DESC = 'desc';
@@ -27,6 +33,10 @@ class Account extends AbstractHttpResource
      */
     public function getBalanceLink(string $address)
     {
+        if (!ctype_alnum($address)) {
+            throw new InvalidArgumentException('Argument address is invalid');
+        }
+
         $finalQuery = array_merge($this->queryParams, [
             'action' => 'balance',
             'address' => $address,
@@ -53,6 +63,10 @@ class Account extends AbstractHttpResource
      */
     public function getBalancesLink(array $addressList)
     {
+        if (count($addressList) < 1) {
+            throw new InvalidArgumentException('Argument addressList is invalid');
+        }
+
         $finalQuery = array_merge($this->queryParams, [
             'action' => 'balancemulti',
             'address' => implode(',', $addressList),
@@ -83,8 +97,13 @@ class Account extends AbstractHttpResource
      * @return string
      * @throws InvalidArgumentException
      */
-    public function getTransactionsLink(string $address, int $page, int $pageSize, string $sort)
+    public function getTransactionsLink(string $address, int $page = 1, int $pageSize = 25, string $sort =
+    Account::SORT_DESC)
     {
+        if (!ctype_alnum($address)) {
+            throw new InvalidArgumentException('Argument address is invalid');
+        }
+
         if ($sort != Account::SORT_ASC && $sort != Account::SORT_DESC) {
             throw new InvalidArgumentException('Argument sort is invalid');
         }

@@ -7,6 +7,12 @@ use EtherScan\Modules\Stats;
 use EtherScan\Resources\AbstractHttpResource;
 use EtherScan\Resources\ApiConnector;
 
+/**
+ * Class EtherScan
+ * @package EtherScan
+ *
+ * The main class for using etherscan.io's api
+ */
 class EtherScan
 {
     const PREFIX_API = 'api.';
@@ -58,12 +64,15 @@ class EtherScan
     }
 
     /**
+     * Enlists the tasks included in the array into the eventloop and
+     * calls them together
+     *
      * @param array $calls
      */
     public function callGroupAsync(array $calls)
     {
         foreach ($calls as $call) {
-            $this->apiConnector->enlistRequest($call[0], $call[1], $call[2]);
+            $this->apiConnector->enlistRequest($call[0], $call[1], $call[2], $call[3]);
         }
 
         $this->apiConnector->getEventLoop()->run();

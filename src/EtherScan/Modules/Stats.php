@@ -4,6 +4,12 @@ namespace EtherScan\Modules;
 
 use EtherScan\Resources\AbstractHttpResource;
 
+/**
+ * Class Stats
+ * @package EtherScan\Modules
+ *
+ * Represents the stats module of the etherscan.io api
+ */
 class Stats extends AbstractHttpResource
 {
     private $queryParams = ['module' => 'stats'];

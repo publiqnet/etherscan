@@ -8,6 +8,12 @@ use React\EventLoop\LoopInterface;
 use React\HttpClient\Client;
 use React\HttpClient\Response;
 
+/**
+ * Does all the calls to the etherscan.io
+ *
+ * Class ApiConnector
+ * @package EtherScan\Resources
+ */
 class ApiConnector
 {
     /** @var resource */
@@ -74,15 +80,20 @@ class ApiConnector
     }
 
     /**
+     * Adds a task into the eventloop to be called asynchronous
+     *
      * @param string $url
      * @param callable $resolve
      */
-    public function enlistRequest(string $url, callable $onResponse, callable $onError)
+    public function enlistRequest(string $url, callable $onResponse, callable $onError, $context = null)
     {
         $request = $this->httpClient->request('GET', $url);
+        /** @var callable $onResponse */
         $request->on('response',
-            function (Response $response) use ($onResponse) {
-                $response->on('data', $onResponse);
+            function (Response $response) use ($onResponse, $context){
+                $response->on('data', function ($data) use ($onResponse, $context) {
+                    $onResponse($data, $context);
+                });
             });
         $request->on('error', $onError);
         $request->end();

@@ -19,6 +19,3 @@ $endT = microtime(1);
 
 
 echo "DONE IN: " . ($endT - $startT);
-
-
-
