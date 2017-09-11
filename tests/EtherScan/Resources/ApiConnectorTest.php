@@ -9,36 +9,11 @@ class ApiConnectorTest extends TestCase
     private $apiKey = 'BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H';
     private $prefix = 'api.';
     private $conn;
-    private $doAsyncRequestResponce = [
-        'status' => 1,
-        'message' => 'OK',
-        'result' =>
-            [
-                'ethbtc' => '0.07153',
-                'ethbtc_timestamp' => '1504784463',
-                'ethusd' => '329.56',
-                'ethusd_timestamp' => '1504784458',
-            ],
-    ];
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->conn = new ApiConnector($this->apiKey);
-    }
-
-    public function doAsyncRequest(){
-        $mock = $this->getMockBuilder(ApiConnector::class)
-            ->setConstructorArgs([$this->apiKey])
-            ->setMethods(['doRequestAsync'])
-            ->getMock();
-
-        $responce = json_encode($this->doAsyncRequestResponce);
-        $mock->expects($this->any())
-            ->method('doRequestAsync')
-            ->will($this->returnValue($responce));
-
-        return $mock;
     }
 
     public function testGenerateLink()
@@ -56,27 +31,12 @@ class ApiConnectorTest extends TestCase
 
     public function testDoRequest()
     {
-        $resource = 'api';
-        $queryParams = ['module' => 'stats', 'action' => 'ethprice'];
+        $account = new \EtherScan\Modules\Account($this->conn, $this->prefix);
+        $url = $account->getBalanceLink('0xbb9bc244d798123fde783fcc1c72d3bb8c189413');
 
-        $responce = $this->conn->doRequest($this->prefix, $resource, $queryParams);
+        $responce = $this->conn->doRequest($url);
         $this->assertJson($responce);
         $responceDecoded = json_decode($responce, true);
-
-        $this->assertArrayHasKey('status', $responceDecoded);
-        $this->assertArrayHasKey('message', $responceDecoded);
-        $this->assertArrayHasKey('result', $responceDecoded);
-
-        $this->assertEquals('OK', $responceDecoded['message']);
-    }
-
-    public function testDoRequestAsync()
-    {
-        $resource = 'api';
-        $queryParams = ['module' => 'stats', 'action' => 'ethprice'];
-        $result = $this->doAsyncRequest()->doRequestAsync($this->prefix, $resource, $queryParams, function ($resolve){}, function ($reject){});
-        $this->assertJson($result);
-        $responceDecoded = json_decode($result, true);
 
         $this->assertArrayHasKey('status', $responceDecoded);
         $this->assertArrayHasKey('message', $responceDecoded);
