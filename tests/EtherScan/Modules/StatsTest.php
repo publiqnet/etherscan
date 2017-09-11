@@ -12,22 +12,6 @@ class StatsTest extends TestCase
     private $prefix = 'api.';
     private $conn;
     private $stats;
-    private $getEthPriceAsyncResponce = [
-            'status' => '1',
-            'message' => 'OK',
-            'result' => [
-                'ethbtc' => '0.07197',
-                'ethbtc_timestamp' => '1504795086',
-                'ethusd' => '335.3',
-                'ethusd_timestamp' => '1504795088',
-            ]
-    ];
-
-    private $getEthSupplyAsyncResponce = [
-            'status' => '1',
-            'message' => 'OK',
-            'result' => '94481993155300000000000000'
-    ];
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -53,43 +37,30 @@ class StatsTest extends TestCase
         $this->assertArrayHasKey('ethusd_timestamp', $responceDecoded['result']);
     }
 
-    private function getEthPriceAsyncMock(){
-        $mock = $this->getMockBuilder(Stats::class)
-            ->setConstructorArgs([new ApiConnector($this->apiKey), $this->prefix])
-            ->setMethods(['getEthPriceAsync'])
-            ->getMock();
+    public function testGetEthPriceAsync(){
+        $responseUrl = 'https://api.etherscan.io/api?module=stats&action=ethsupply&apiKey=BZ34DW4M5J6XZIQV5DWBCdddd2MJV32V955Q1H';
+        $url = $this->stats->getEthSupplyLink();
+        self::assertEquals($url, $responseUrl);
 
-        $responce = json_encode($this->getEthPriceAsyncResponce);
-        $mock->expects($this->any())
-            ->method('getEthPriceAsync')
-            ->will($this->returnValue($responce));
+        $resp = [];
 
-        return $mock;
-    }
+        $a = function ($responseOnResolve) use (&$resp) {
+            $resp[] = $responseOnResolve;
+            echo 'Called on resolve: ' . $responseOnResolve . PHP_EOL;
+        };
+        $b = function ($responseOnResolve) use (&$resp) {
+            $resp[] = $responseOnResolve;
+            echo 'Called on error: ' . $responseOnResolve . PHP_EOL;
+        };
 
-    public function testGetEthPriceAsync()
-    {
-        $responce = $this->getEthPriceAsyncMock()->getEthPriceAsync(function (){}, function (){});
-        $this->assertJson($responce);
-        $responceDecoded = json_decode($responce, true);
-        $this->assertArrayHasKey('status', $responceDecoded);
-        $this->assertArrayHasKey('message', $responceDecoded);
-        $this->assertArrayHasKey('result', $responceDecoded);
+        $etherScan = new \EtherScan\EtherScan($this->conn);
 
-        $this->assertEquals('OK', $responceDecoded['message']);
-        $this->assertTrue(is_array($responceDecoded['result']));
-        $this->assertArrayHasKey('ethbtc', $responceDecoded['result']);
-        $this->assertArrayHasKey('ethbtc_timestamp', $responceDecoded['result']);
-        $this->assertArrayHasKey('ethusd', $responceDecoded['result']);
-        $this->assertArrayHasKey('ethusd_timestamp', $responceDecoded['result']);
+        $etherScan->callGroupAsync([[$url, $a, $b], [$url, $a, $b]]);
 
-    }
-
-    public function testGetEthSupply()
-    {
-        $responce = $this->stats->getEthSupply();
-        $this->assertJson($responce);
-        $responceDecoded = json_decode($responce, true);
+        self::assertTrue(is_array($resp));
+        self::assertEquals(count($resp), 2);
+        self::assertJson($resp[0]);
+        $responceDecoded = json_decode($resp[0], true);
         $this->assertArrayHasKey('status', $responceDecoded);
         $this->assertArrayHasKey('message', $responceDecoded);
         $this->assertArrayHasKey('result', $responceDecoded);
@@ -100,23 +71,9 @@ class StatsTest extends TestCase
         $this->assertInternalType('float', $floatResult);
     }
 
-    private function getEthSupplyAsyncMock(){
-        $mock = $this->getMockBuilder(Stats::class)
-            ->setConstructorArgs([new ApiConnector($this->apiKey), $this->prefix])
-            ->setMethods(['getEthSupplyAsync'])
-            ->getMock();
-
-        $responce = json_encode($this->getEthSupplyAsyncResponce);
-        $mock->expects($this->any())
-            ->method('getEthSupplyAsync')
-            ->will($this->returnValue($responce));
-
-        return $mock;
-    }
-
-    public function testGetEthSupplyAsync()
+    public function testGetEthSupply()
     {
-        $responce = $this->getEthSupplyAsyncMock()->getEthSupplyAsync(function (){}, function (){});
+        $responce = $this->stats->getEthSupply();
         $this->assertJson($responce);
         $responceDecoded = json_decode($responce, true);
         $this->assertArrayHasKey('status', $responceDecoded);
