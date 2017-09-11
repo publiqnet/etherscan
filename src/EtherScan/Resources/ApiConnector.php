@@ -85,17 +85,22 @@ class ApiConnector
      * @param string $url
      * @param callable $resolve
      */
-    public function enlistRequest(string $url, callable $onResponse, callable $onError, $context = null)
+    public function enlistRequest(string $url, callable $onResponse, callable $onError = null, $context = null)
     {
         $request = $this->httpClient->request('GET', $url);
         /** @var callable $onResponse */
         $request->on('response',
-            function (Response $response) use ($onResponse, $context){
+            function (Response $response) use ($onResponse, $context) {
                 $response->on('data', function ($data) use ($onResponse, $context) {
                     $onResponse($data, $context);
                 });
             });
-        $request->on('error', $onError);
+
+        if (is_callable($onError)) {
+            $request->on('error', function ($data) use ($onError, $context) {
+                $onError($data, $context);
+            });
+        }
         $request->end();
     }
 
